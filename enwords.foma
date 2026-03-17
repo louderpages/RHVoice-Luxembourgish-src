@@ -1,0 +1,2 @@
+read text enwords.txt
+write att /tmp/enwords.att

@@ -1,0 +1,86 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+
+# From English symbols.foma, Copyright 2024 Non-Routine LLC
+
+# defined SpokenSymbols first so that they might be over-written with other more specific definitions in this file
+source SpokenSymbols.foma
+
+define WordAsLetter  []
+  ; # English: a|A;   # will be pronounced as a letter sequence if not in use as a word
+
+define Hyphen 
+  %- : [minus] | #  U+002D  hyphen-minus
+  %‐ : [bindestrëch] ;  # U+2010 Hyphen
+
+define Dash 
+ %― : [stréch] | #  U+2015 Horizontal Bar
+ %– : [stréch] | #  U+2013 En Dash
+ %— : [stréch] ; # U+2014 Em Dash
+
+define SilentBetweenSpace 
+ %_ :  ënnersträich | 
+ Hyphen | Dash;
+
+define openQuote  
+ [%" | %“ | %«] : [ufanks zitatiouns zeechen] ; 
+
+define SilentBeforeSpace 
+ %: : [doppelpunkt] | 
+ %; : [stréchpunkt] ; 
+
+ define closeQuote 
+ [%" |  %” | %» | %„] : [schluss zitatiouns zeechen] ; 
+
+define SilentEndSentence 
+	%? : [frage zeechen] | 
+	%! : [ausrufe zeechen] | 
+  %: : [doppelpunkt] | 
+  %. : punkt | 
+  %; : [stréchpunkt] ; 
+
+define openParen 
+ %( : [klammer opmaachen] | 
+ %{ : [akkolad lénks ] | 
+ %[ : [eckeg klamer lénks] ; 
+
+define closeParen 
+ %) : [schlussklammer] | 
+ %} : [Akkolad riets] | 
+ %] : [eckeg klamer reies] ; 
+
+define comma %,;
+
+define pauseSymbol  openQuote | closeQuote | openParen | closeParen | comma ;
+
+define AlwaysSilent 
+ [%'|%’] : apostroph ;
+ 
+define AlwaysSilentPause 
+  Dash | 
+	%… : [ellips] | 
+ %• : [punktzuel] | 
+ %, : komma ;
+  
+define SilentPunctuation 
+	AlwaysSilentPause | SilentBetweenSpace | SilentAfterSpace | SilentBeforeSpace | SilentEndSentence | openParen | closeParen | openQuote | closeQuote | AlwaysSilent;
+
+ 
+ 
+ define Symbol SilentPunctuation | SpokenSymbol | SubTags;
+ 

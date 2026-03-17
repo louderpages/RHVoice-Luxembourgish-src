@@ -1,0 +1,245 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+define Unit    
+[{0} : "null"] | 
+[{1} : "eent"] | 
+[{2} : "zwee"] | 
+[{3} : "dräi"] | 
+[{4} : "véier"] | 
+[{5} : "fënnef"] | 
+[{6} : "sechs"] | 
+[{7} : "siwen"] | 
+[{8} : "aacht"] | 
+[{9} : "néng"]  ; 
+
+define Decade 
+Unit |    
+[{10} : "zéng"] | 
+[{11} : "eelef"] | 
+[{12} : "zwielef"] | 
+[{13} : "dräizéng"] | 
+[{14} : "véierzéng"] | 
+[{15} : "fofzéng"] | 
+[{16} : "siechzéng"] | 
+[{17} : "siwwenzéng"] | 
+[{18} : "uechtzéng"] | 
+[{19} : "nonzéng"] | 
+[{20} : "zwanzeg"] | 
+[{21} : "ennanzwanzeg"] | 
+[{22} : "zweeanzwanzeg"] | 
+[{23} : "dräianzwanzeg"] | 
+[{24} : "vèieranzwanzeg"] | 
+[{25} : "fënnefanzwanzeg"] | 
+[{26} : "sechsanzwanzeg"] | 
+[{27} : "siwenanzwanzeg"] | 
+[{28} : "aachtanzwanzeg"] | 
+[{29} : "nénganzwanzeg"] | 
+[{30} : "drësseg"] | 
+[{31} : "eenandrësseg"] | 
+[{32} : "zweeandrësseg"] | 
+[{33} : "dräiandrësseg"] | 
+[{34} : "véierandrësseg"] | 
+[{35} : "fënnefandrësseg"] | 
+[{36} : "sechsandrësseg"] | 
+[{37} : "siwenandrësseg"] | 
+[{38} : "aachtandrësseg"] | 
+[{39} : "néngandrësseg"] | 
+[{40} : "véierzeg"] | 
+[{41} : "eenavéierzeg"] | 
+[{42} : "zweeavéierzeg"] | 
+[{43} : "dräiavéierzeg"] | 
+[{44} : "véieravéierzeg"] | 
+[{45} : "fënnefavéierzeg"] | 
+[{46} : "sechsavéierzeg"] | 
+[{47} : "siwenavéierzeg"] | 
+[{48} : "aachtavéierzeg"] | 
+[{49} : "néngavéierzeg"] | 
+[{50} : "fofzeg"] | 
+[{51} : "eenafofzeg"] | 
+[{52} : "zweeafofzeg"] | 
+[{53} : "dräiafofzeg"] | 
+[{54} : "véierafofzeg"] | 
+[{55} : "fënnefafofzeg"] | 
+[{56} : "sechsafofzeg"] | 
+[{57} : "siwenafofzeg"] | 
+[{58} : "aachtafofzeg"] | 
+[{59} : "néngafofzeg"] | 
+[{60} : "sechzeg"] | 
+[{61} : "eenasechzeg"] | 
+[{62} : "zweeasechzeg"] | 
+[{63} : "dräiasechzeg"] | 
+[{64} : "véierasechzeg"] | 
+[{65} : "fënnefasechzeg"] | 
+[{66} : "sechsasechzeg"] | 
+[{67} : "siwenasechzeg"] | 
+[{68} : "aachtasechzeg"] | 
+[{69} : "néngasechzeg"] | 
+[{70} : "siwwenzeg"] | 
+[{71} : "eenasiwwenzeg"] | 
+[{72} : "zweeasiwwenzeg"] | 
+[{73} : "dräiasiwwenzeg"] | 
+[{74} : "véierasiwwenzeg"] | 
+[{75} : "fënnefasiwwenzeg"] | 
+[{76} : "sechsasiwwenzeg"] | 
+[{77} : "siwenasiwwenzeg"] | 
+[{78} : "aachtasiwwenzeg"] | 
+[{79} : "néngasiwwenzeg"] | 
+[{80} : "achtzeg"] | 
+[{81} : "eenanachtzeg"] | 
+[{82} : "zweeanachtzeg"] | 
+[{83} : "dräianachtzeg"] | 
+[{84} : "véieranachtzeg"] | 
+[{85} : "fënnefanachtzeg"] | 
+[{86} : "sechsanachtzeg"] | 
+[{87} : "siwenanachtzeg"] | 
+[{88} : "aachtanachtzeg"] | 
+[{89} : "nénganachtzeg"] | 
+[{90} : "nonzeg"] | 
+[{91} : "eenannonzeg"] | 
+[{92} : "zweeannonzeg"] | 
+[{93} : "dräiannonzeg"] | 
+[{94} : "véierannonzeg"] | 
+[{95} : "fënnefannonzeg"] | 
+[{96} : "sechsannonzeg"] | 
+[{97} : "siwenannonzeg"] | 
+[{98} : "aachtannonzeg"] | 
+[{99} : "néngannonzeg"] ; 
+
+define Counter 
+[[tln|tlns] : "trillion"] | 
+[[bln|blns] : "milliard"] | 
+[[hnd|hnds] : "honnert"] | 
+[[mln|mlns] : "millioun"] | 
+[[thn|thns] : "dausend"] ; 
+
+
+define ordUnit  
+[{0} : "nullst"] | 
+[{1} : "éischten"] | 
+[{2} : "zweeten"] | 
+[{3} : "drëtten"] | 
+[{4} : "véierten"] | 
+[{5} : "fënneften"] | 
+[{6} : "sechsten"] | 
+[{7} : "siwenten"] | 
+[{8} : "aachten"] | 
+[{9} : "néngten"] ;
+
+define ordDecade 
+ordUnit |  
+[{10} : "zéngten"] | 
+[{11} : "eeleften"] | 
+[{12} : "zwielften"] | 
+[{13} : "dräizéngten"] | 
+[{14} : "véierzéngten"] | 
+[{15} : "fofzéngten"] | 
+[{16} : "siechzéngten"] | 
+[{17} : "siwwenzéngten"] | 
+[{18} : "uechtzéngten"] | 
+[{19} : "nonzéngten"] | 
+[{20} : "zwanzegten"] | 
+[{21} : "ennanzwanzegsten"] | 
+[{22} : "zweeanzwanzegsten"] | 
+[{23} : "dräianzwanzegsten"] | 
+[{24} : "vèieranzwanzegsten"] | 
+[{25} : "fënnefanzwanzegsten"] | 
+[{26} : "sechsanzwanzegsten"] | 
+[{27} : "siwenanzwanzegsten"] | 
+[{28} : "aachtanzwanzegsten"] | 
+[{29} : "nénganzwanzegsten"] | 
+[{30} : "drëssegsten"] | 
+[{31} : "eenandrëssegsten"] | 
+[{32} : "zweeandrëssegsten"] | 
+[{33} : "dräiandrëssegsten"] | 
+[{34} : "véierandrëssegsten"] | 
+[{35} : "fënnefandrëssegsten"] | 
+[{36} : "sechsandrëssegsten"] | 
+[{37} : "siwenandrëssegsten"] | 
+[{38} : "aachtandrëssegsten"] | 
+[{39} : "néngandrëssegsten"] | 
+[{40} : "véierzegsten"] | 
+[{41} : "eenavéierzegsten"] | 
+[{42} : "zweeavéierzegsten"] | 
+[{43} : "dräiavéierzegsten"] | 
+[{44} : "véieravéierzegsten"] | 
+[{45} : "fënnefavéierzegsten"] | 
+[{46} : "sechsavéierzegsten"] | 
+[{47} : "siwenavéierzegsten"] | 
+[{48} : "aachtavéierzegsten"] | 
+[{49} : "néngavéierzegsten"] | 
+[{50} : "fofzegsten"] | 
+[{51} : "eenafofzegsten"] | 
+[{52} : "zweeafofzegsten"] | 
+[{53} : "dräiafofzegsten"] | 
+[{54} : "véierafofzegsten"] | 
+[{55} : "fënnefafofzegsten"] | 
+[{56} : "sechsafofzegsten"] | 
+[{57} : "siwenafofzegsten"] | 
+[{58} : "aachtafofzegsten"] | 
+[{59} : "néngafofzegsten"] | 
+[{60} : "sechzegsten"] | 
+[{61} : "eenasechzegsten"] | 
+[{62} : "zweeasechzegsten"] | 
+[{63} : "dräiasechzegsten"] | 
+[{64} : "véierasechzegsten"] | 
+[{65} : "fënnefasechzegsten"] | 
+[{66} : "sechsasechzegsten"] | 
+[{67} : "siwenasechzegsten"] | 
+[{68} : "aachtasechzegsten"] | 
+[{69} : "néngasechzegsten"] | 
+[{70} : "siwwenzegsten"] | 
+[{71} : "eenasiwwenzegsten"] | 
+[{72} : "zweeasiwwenzegsten"] | 
+[{73} : "dräiasiwwenzegsten"] | 
+[{74} : "véierasiwwenzegsten"] | 
+[{75} : "fënnefasiwwenzegsten"] | 
+[{76} : "sechsasiwwenzegsten"] | 
+[{77} : "siwenasiwwenzegsten"] | 
+[{78} : "aachtasiwwenzegsten"] | 
+[{79} : "néngasiwwenzegsten"] | 
+[{80} : "achtzegsten"] | 
+[{81} : "eenanachtzegsten"] | 
+[{82} : "zweeanachtzegsten"] | 
+[{83} : "dräianachtzegsten"] | 
+[{84} : "véieranachtzegsten"] | 
+[{85} : "fënnefanachtzegsten"] | 
+[{86} : "sechsanachtzegsten"] | 
+[{87} : "siwenanachtzegsten"] | 
+[{88} : "aachtanachtzegsten"] | 
+[{89} : "nénganachtzegsten"] | 
+[{90} : "nonzegsten"] | 
+[{91} : "eenannonzegsten"] | 
+[{92} : "zweeannonzegsten"] | 
+[{93} : "dräiannonzegsten"] | 
+[{94} : "véierannonzegsten"] | 
+[{95} : "fënnefannonzegsten"] | 
+[{96} : "sechsannonzegsten"] | 
+[{97} : "siwenannonzegsten"] | 
+[{98} : "aachtannonzegsten"] | 
+[{99} : "néngannonzegsten"]  
+; 
+
+define ordCounter 
+[[tln|tlns] : "trillionsten"] | 
+[[bln|blns] : "milliardsten"] | 
+[[hnd|hnds] : "honnertsten"] | 
+[[mln|mlns] : "milliounsten"] | 
+[[thn|thns] : "dausendsten"] ; 
+
+define DecimalTranslation 
+# For a future case:
+%,:komma | 
+%.:punkt ; 

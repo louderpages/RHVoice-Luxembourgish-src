@@ -1,0 +1,58 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# Modifications of original code made for the Luxembourgish langauge.
+
+# Copyright (C) 2022 Olga Yakovleva <rhvoice@rhvoice.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+((utt_type is q)
+ ((R:SylStructure.parent.R:Phrase.parent.phrases_out is 0)
+  ((ssyl_out < 2)
+   ((n.stress is 1)
+    ((syl_in is 0)
+     ((n.syl_break is 4)
+(("[i m) (e d)"))
+      (("[i m) (e m)")))
+     ((n.syl_break is 4)
+      (("(e l)"))
+      (("[e x)"))))
+    ((stress is 1)
+     ((syl_in is 0)
+      ((syl_break is 4)
+       (("[i m) (f T) (F T]"))
+       (("[i m) (e d)")))
+      ((syl_break is 4)
+       (("(f T) (F T]"))
+       (("(e l)"))))
+     ((syl_break is 4)
+      ((ssyl_in is 0)
+       ((NONE))
+       (("(f T) (F T]")))
+      ((n.n.stress is 1)
+       ((n.n.syl_break is 4)
+	(("[e x)"))
+	((NONE)))
+       ((NONE))))))
+   ((n.n.syl_break is 4)
+    ((n.n.stress is 1)
+     (("[e x)"))
+     ((NONE)))
+    ((NONE))))
+  ((NONE)))
+ ((utt_type is qw)
+  ((NONE))
+  ((NONE))))

@@ -1,0 +1,140 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+source alphabet.foma
+source tok_config.foma   
+define word [Word hyphen]* Word;
+#define word [stressMark | Hyphen | lcLetter]+ (apos); #[d apos] | [s apos] | [m apos] | [c apos] | [l apos] | [m apos] | [t apos]; 
+
+
+# Some words are written with a single consonant, but the vowels are pronounced long. We don't need to handle them here really, they will be in the lexicon. This was coded before our first lexicon.
+define shortShortExceptionWord 
+[{mat} : {matt}]  
+ ; 
+
+define G2pUnambigVowels 
+[g2pDoubleLongVowel | g2pDiphthong | g2pGraphicStressedVowel] @-> ; 
+
+# If there is just one syllable, we know it is stressed, and we can
+# better guess long and short vowels from the spelling. 
+define g2pOnlyVowel 
+# A single stressed a, i, o or u before a single consonant will be pronounced long in most cases.
+[g2pLongVowelGroup1  -> || .#. consonantLetter* _ [consonantLetter -x] .#. ] 
+# Here e doesn't mean the schwa. Guessing the most likely pronunciation, may be wrong.
+.o. [[[e : "/ae0"] .P. g2pVowel] @-> || .#. consonantLetter* _ consonantLetter* .#.] 
+ ; 
+
+# Here we are trying to guess the pronunciation of single vowel letters in the last 2 syllables. We are assuming the stress falls on the penultimate syllable.
+
+# Unstressed single vowel in the final syllable is probably short.
+define g2pFinalVowel 
+g2pSingleVowel -> || _ consonantLetter* .#. ; 
+
+# A single penultimate a, i, o or u before a single consonant, assuming it is stressed, should be pronounced long.
+define g2pPenultimateVowel 
+g2pLongVowelGroup1 -> || .#. [\stressMark]* _ consonantLetter pVowel consonantLetter* .#. ; 
+
+# This is a guess: move the stress to the left from the penultimate schwa.
+define AvoidSchwaStress 
+[..] -> stressMark || 
+[pVowel - schwa] _ pConsonant* schwa pConsonant* pVowel pConsonant* .#. ; 
+
+define StressPenultimateSyllable 
+[..] -> stressMark || 
+.#. [\stressMark]* pVowel _ pConsonant* pVowel pConsonant* .#. ; 
+
+define StressOnlySyllable 
+[..] -> stressMark || 
+.#. pConsonant* pVowel _ pConsonant* .#. ; 
+
+define ApplyStressMark 
+stressVowelMap -> || _ stressMark ; 
+
+define GRule 
+# Initial or before a stressed vowel, according to https://luxembourgishwithanne.lu/2018/09/09/5-pronunciation-mistakes-of-the-luxembourgish-letter-g/
+["/g?" -> "/g" || .#. _ , _ stressVowelMap.l] 
+.o. ["/g?" -> "/g" || _ "/ax0"]  
+# G-rules on the internet are very confusing. For unstressed vowels just going on this bit from the 2023 paper: The voiced plosive [g] is restricted to occur only in syllable onsets, whereas in medial and final positions, it has been spirantized, ... into the four fricatives ... the velar fricatives only occur after back vowels and the alveolo-palatals only after front vowels and consonants.
+.o. ["/g?" -> "/rh" || backVowel _ ] 
+.o. ["/g?" -> "/zz"] ; 
+
+define ChRule 
+{ch} -> "/xh" || backVowel stressMark* _ ; 
+
+define FinalDevoicing 
+VoicedToVoicelessMap -> || _ .#. ; 
+
+# Not sure how safe it is to code this rule before any consonant.
+define RVocalizationRule 
+RVocalizationMap @-> || 
+_ .#. | pConsonant ,, 
+"/r" @-> 0 || 
+"/aa0" | "/aa1" _ pConsonant 
+ ; 
+
+define SRule 
+[{ss} -> "/s"] 
+.o. [s -> "/z" ||  _ pVowel] 
+.o. [s -> "/sh" || [.#. | pVowel]  _ [t | p] [r | pVowel]] 
+.o. [s -> "/sh" || .#.  _ [t | p] ] 
+ ; 
+
+# catch prefixed verbs with -ge-
+define prefixGe 
+  g -> "/g" || .#. [ [u] | [o n] | [a u s]]  _   ,,
+  [v i r g] -> ["/f" "/ier1" "/g"] || .#.  _  
+	;
+
+define misc1 
+  [c h a n c]:["/sh" "/an0" "/s"] [e:0|ë] -> || _ ,,
+  [b u e r g e r]:["/b" "/uer0" "/j" "/ax0" "/r"] -> || _ ;
+
+define quRule 
+  [q u] -> ["/k" "/w"] || _ e e;
+
+source abbrevs.foma
+define G2pRules 
+ AbbreviationTranslate .P.
+ 
+ word 
+ .o. [hyphen|apos]:0 -> || _ 
+.o. prefixGe 
+.o. misc1 
+.o. quRule 
+.o. [shortShortExceptionWord -> || .#. _ .#. ] 
+# Consume unambiguous vowels and diphthongs first, so later rules can work with the last two syllables.
+.o. G2pUnambigVowels 
+.o. g2pOnlyVowel 
+.o. g2pFinalVowel 
+.o. g2pPenultimateVowel 
+.o. [g2pVowel @->] 
+.o. ChRule 
+.o. SRule 
+.o. [g2pConsonant @->] 
+.o. AvoidSchwaStress 
+.o. StressPenultimateSyllable 
+.o. StressOnlySyllable 
+.o. ApplyStressMark 
+.o. [stressMark -> 0] 
+# As this rule refers to stress, apply it this late.
+.o. GRule 
+.o. FinalDevoicing 
+.o. RVocalizationRule 
+
+ ; 
+
+regex G2pRules ; 
+write att /tmp/g2p.att

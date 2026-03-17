@@ -1,0 +1,255 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+define stressMark "`" ; 
+define apos %'  | %’ ;
+define hyphen [%- | %‐] ; 
+
+define downcaseVowel 
+[A : a] | [Á : á] | [Ã : ã] | [Ä : ä] | [À : à] | [Â : â] | 
+[E : e] | [É : é] |           [Ë : ë] | [È : è] | [Ê : ê] | 
+[I : i] | [Í : í] |           [Ï : ï] | [Ì : ì] | [Î : î] |   
+[O : o] | [Ó : ó] | [Õ : õ] | [Ö : ö] | [Ò : ò] | [Ô : ô] | 
+[U : u] | [Ú : ú] |           [Ü : ü] | [Ù : ù] | [Û : û] | 
+[Y : y] |                     [Ÿ : ÿ]  |
+[Œ :œ]  
+ ; 
+
+define downcaseConsonant 
+[B : b] | 
+[C : c] | 
+[D : d] | 
+[F : f] | 
+[G : g] | 
+[H : h] | 
+[J : j] | 
+[K : k] | 
+[L : l] | 
+[M : m] | 
+[N : n] | 
+[P : p] | 
+[Q : q] | 
+[R : r] | 
+[S : s] | 
+[T : t] | 
+[V : v] | 
+[W : w] | 
+[X : x] | 
+[Z : z] | 
+[Ç : ç]  |
+[Ñ : ñ]
+# no single uppercase for ß
+ ; 
+
+
+define downcaseLetter 
+downcaseVowel | downcaseConsonant ; 
+
+define lcVowelLetter downcaseVowel.l ;
+define ucVowelLetter downcaseVowel.u ; 
+define lcConsonantLetter downcaseConsonant.l | ß ;  # no uppercase for ß 
+define ucConsonantLetter downcaseConsonant.u ; 
+define vowelLetter lcVowelLetter | ucVowelLetter ; 
+define consonantLetter lcConsonantLetter | ucConsonantLetter ; 
+define lcLetter lcVowelLetter | lcConsonantLetter ; 
+define ucLetter ucVowelLetter | ucConsonantLetter ; 
+define letter vowelLetter | consonantLetter | stressMark ; 
+define Letter letter ;
+
+define grapheme letter ; 
+
+# Consonants are doubled after stressed short vowels, unless there are more consonants after. Double k is written ck, double z is written tz.
+
+define doubleConsonantLetter 
+{bb} | {ck} | {dd} | {ff} | {kk} | {ll} | {mm} | {nn} | {pp} | {tt} | {tz} ; 
+
+define g2pConsonant 
+# Default pronunciation of single consonant letters.
+[b^{1,2} : "/b"] | 
+[c : "/k"] | 
+[d^{1,2} : "/d"] | 
+[f^{1,2} : "/f"] | 
+# Special symbol for an unresolved g. Later rules will try to figure it out.
+[g : "/g?"] | 
+[h : "/h"] | 
+[j : "/j"] | 
+[k^{1,2} : "/k"] | 
+[l^{1,2} : "/l"] | 
+[m^{1,2} : "/m"] | 
+[n^{1,2} : "/n"] | 
+[ñ : ["/n" "/j"]] |
+[p^{1,2} : "/p"] | 
+[q : "/k"] | 
+[r^{1,2} : "/r"] | 
+[[s|ß|ç] : "/s"] | 
+[t^{1,2} : "/t"] | 
+[{th} : "/t"] | 
+[v : "/v"] | 
+[w^{1,2} : "/v"] | 
+[x : ["/k" "/s"]] | 
+[[(t) z] : "/ts"] | 
+# Pronounced differently when doubled.
+[{ss} : "/s"] | 
+#Default pronunciation of digraphs and trigraphs.
+[{ch} : "/ch"] | 
+[{sch} : "/sh"] | 
+[{chs} : ["/k" "/s"]] | 
+[{ck} : "/k"] | 
+[{ng} : "/ng"]  | 
+[{nk} : ["/ng" "/k"]] | 
+[{gg} : "/g"] 
+; 
+
+# Some consonants don't appear in the default mapping.
+define pConsonant [g2pConsonant.l & ?] | "/xh" | "/zh" | "/zz" | "/g" | "/rh" |"/ts" | "/dz" | "/z" | "/dzh" | "/th" | "/dh" | "/ch"; 
+
+define g2pShortVowel 
+[[a|ã|á|à|â] : "/a0"] | 
+[ä : "/ae0"] |
+# Assume that the single e is most often pronounced as the schwa, but there are a lot of exceptions.
+[e : "/ax0"] | 
+[é : ["/e0" stressMark]] |
+# From the auto-translated spelling manual.
+[ë : ["/ax0" stressMark]] | 
+[[i|ì|í|y] : "/i0"] | 
+[o : "/o0"] | 
+[[u|ù] : "/u0"] | 
+[ü : "/y0"] | 
+[ï : "/i0"] | 
+[[ò|ó] : "/o0"] | 
+[[õ|œ] : "/ooe0"] | 
+[î : "/i0"] 
+ ; 
+
+define g2pGraphicStressedVowel 
+g2pShortVowel .o. [? stressMark] ; 
+
+# A mapping to long vowel phonemes. Most vowel letters can be single or double.
+define g2pLongVowel 
+[[a (a)] : "/aa0"] | 
+[{ee} : "/ee0"] | 
+[[i (i)] : "/ii0"] | 
+[[o (o)] : "/oo0"] | 
+[[u (u)] : "/uu0"] | 
+[{üü} : "/yy0"] | 
+[{ää} : "/aae0"] | 
+[è : "/ee0"] | 
+[[ö (ö)] : "/ooe0"] | 
+[ê : "/aae0"] | 
+[à : "/aa0"] | 
+[ô : "/oo0"] | 
+[û : "/uu0"] | 
+[â : "/aa0"] 
+ ; 
+
+# Extract the double mapping from the mapping above.
+define g2pDoubleLongVowel 
+[vowelLetter^2] .o. g2pLongVowel ; 
+
+define g2pDiphthong 
+[[{ai} | {ei}] : "/ai0"] | 
+[{au} : "/au0"] | 
+[[{äu} | {eu} | {oy} | {oi}] : "/oi0"] | 
+[{ou} : ["/o0" "/w"]] |  # test, g2p v3 
+### [{ou} : "/ou0"] | 
+[{éi} : "/ei0"] | 
+[{ie} : "/ie0"] | 
+[{ue} : "/ue0"] | 
+[{äi} : "/aei0"]  
+ ; 
+
+# According to the spelling guide, the same vowel length related rules apply to these 4 letters.
+define vowelLetterGroup1 a | i | o | u ; 
+define g2pShortVowelGroup1 vowelLetterGroup1 .o. g2pShortVowel ;
+define g2pLongVowelGroup1 vowelLetterGroup1 .o. g2pLongVowel ; 
+
+define g2pVowel 
+# Use the priority union to get a single mapping for single a, i, o and u. 
+[g2pShortVowel .P. g2pLongVowel] | 
+g2pDiphthong ; 
+
+define g2pSingleVowel 
+vowelLetter .o. g2pVowel ; 
+
+# Following LOD in coding r-vocalization. Mappings taken from Wikipedia. Probably need checking for errors on my part.
+define RVocalizationMap 
+[["/ax0" "/r"] : "/er0"] | 
+[["/ax1" "/r"] : "/er1"] | 
+[["/ii0" "/r"] : "/ier0"] | 
+[["/ii1" "/r"] : "/ier1"] | 
+[["/ie0" "/r"] : "/ier0"] | 
+[["/ie1" "/r"] : "/ier1"] | 
+[["/uu0" "/r"] : "/uer0"] | 
+[["/uu1" "/r"] : "/uer1"] | 
+[["/ue0" "/r"] : "/uer0"] | 
+[["/ue1" "/r"] : "/uer1"]  
+ ; 
+
+define stressVowelMap 
+["/a0" : "/a1"] | 
+["/aa0" : "/aa1"] | 
+["/aae0" : "/aae1"] | 
+["/ae0" : "/ae1"] | 
+["/ae0" : "/ae1"] | 
+["/aer0" : "/aer1"] | 
+["/aei0" : "/aei1"] | 
+["/aeu0" : "/aeu1"] | 
+["/ai0" : "/ai1"] | 
+["/an0" : "/an1"] | 
+["/au0" : "/au1"] | 
+["/ax0" : "/ax1"] | 
+["/e0" : "/e1"] | 
+["/ee0" : "/ee1"] | 
+["/ei0" : "/ei1"] | 
+["/i0" : "/i1"] | 
+["/ie0" : "/ie1"] | 
+["/ii0" : "/ii1"] | 
+["/in0" : "/in1"] | 
+["/o0" : "/o1"] | 
+["/oi0" : "/oi1"] | 
+["/on0" : "/on1"] | 
+["/oo0" : "/oo1"] | 
+["/ooe0" : "/ooe1"] | 
+["/ou0" : "/ou1"] | 
+["/u0" : "/u1"] | 
+["/ue0" : "/ue1"] | 
+["/uh0" : "/uh1"] | 
+["/uu0" : "/uu1"] | 
+["/y0" : "/y1"] | 
+["/yy0" : "/yy1"] | 
+["/er0" : "/er1"] | 
+["/ier0" : "/ier1"] | 
+["/uer0" : "/uer1"] 
+ ; 
+
+define pVowel 
+stressVowelMap.l | stressVowelMap.u | "/er0" | "/w" ; 
+
+define backVowel 
+"/a0" | "/aa0" | "/au0" | "/o0" | "/oo0" | "/ou0" | "/u0" | "/uu0" | 
+"/a1" | "/aa1" | "/au1" | "/o1" | "/oo1" | "/ou1" | "/u1" | "/uu1" ; 
+
+define schwa "/ax0" ; 
+
+define VoicedToVoicelessMap 
+["/b" : "/p"] | 
+["/d" : "/t"] | 
+["/dz" : "/ts"] | 
+["/g" : "/k"] | 
+["/v" : "/f"] | 
+["/z" : "/s"] | 
+["/zh" : "/sh"] | 
+["/rh" : "/xh"] | 
+["/zz" : "/ch"] ; 

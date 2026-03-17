@@ -1,0 +1,78 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+define complexOnset 
+["/b" "/j"] | 
+["/b" "/l"] | 
+["/b" "/r"] | 
+["/d" "/j"] | 
+["/d" "/r"] | 
+["/d" "/zh"] | 
+["/d" "/zh" "/w"] | 
+["/f" "/j"] | 
+["/f" "/jw"] | 
+["/f" "/l"] | 
+["/f" "/r"] | 
+["/g" "/l"] | 
+["/g" "/n"] | 
+["/g" "/r"] | 
+["/g" "/z"] | 
+["/k" "/j"] | 
+["/k" "/jw"] | 
+["/k" "/l"] | 
+["/k" "/n"] | 
+["/k" "/r"] | 
+["/k" "/w"] | 
+["/l" "/j"] | 
+["/m" "/j"] | 
+["/n" "/j"] | 
+["/n" "/w"] | 
+["/p" "/f"] | 
+["/p" "/f" "/l"] | 
+["/p" "/j"] | 
+["/p" "/jw"] | 
+["/p" "/l"] | 
+["/p" "/l" "/w"] | 
+["/p" "/r"] | 
+["/p" "/s"] | 
+["/p" "/w"] | 
+["/r" "/j"] | 
+["/s" "/j"] | 
+["/s" "/jw"] | 
+["/s" "/w"] | 
+["/sh" "/j"] | 
+["/sh" "/l"] | 
+["/sh" "/m"] | 
+["/sh" "/n"] | 
+["/sh" "/p"] | 
+["/sh" "/p" "/l"] | 
+["/sh" "/p" "/r"] | 
+["/sh" "/r"] | 
+["/sh" "/t"] | 
+["/sh" "/t" "/r"] | 
+["/sh" "/v"] | 
+["/sh" "/w"] | 
+["/t" "/j"] | 
+["/t" "/r"] | 
+["/t" "/sh"] | 
+["/t" "/w"] | 
+["/ts" "/j"] | 
+["/ts" "/r"] | 
+["/ts" "/w"] | 
+["/v" "/r"] | 
+["/z" "/j"] | 
+["/zh" "/j"] 
+ ; 

@@ -1,0 +1,57 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# Modifications of original code made for the Luxembourgish langauge.
+
+# Copyright (C) 2024 Non-Routine LLC.  <lp@louderpages.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+# Luxembourgish configuration file for Non-Routines' generalized tokenizer
+
+# Note the PSep must be defined in the context in which the following definitions are then amde.
+# As such, this file cannot stand alone since it does not define PSep
+
+# In tok.foma within sentence tokenizer mode, this thousands separator will include reference to the core's 
+# string boundaries.
+# Whereas, in numbers.foma, it will just be the ascii code for a single space
+
+define ampm  {Auer} word;
+define spaceCode "#x20" | "#xA0" | "#xa0";
+define CSep  spaceCode | [eb spaceCode sb];  # different thousand seps, for numbers.foma and tok.foma when operating in sentence-mode
+define PSep  %. ;  # different thousand seps, for numbers.foma and tok.foma when operating in sentence-mode
+define DecSep %,; # decimal separator
+define OrdSuffix %.; # last one is the definite article. 
+
+define NZDigit 1|2|3|4|5|6|7|8|9;
+define Digit %0|NZDigit;
+
+define Currency [{$} | € ] (CSep);
+define USDCCY [C:dollar | CC:dollar | [cc|Zcc]:cent |  [c|Zc]:cent ]; 
+define EURCCY [C:euro | CC:euro | [cc|Zcc]:cent |  [c|Zc]:cent ]; 
+define NameCurrencyComponents 
+   [
+       USDCCY -> ||  .#. {$} ?* _  ,,
+       EURCCY -> ||  .#. € ?* _  
+	 ] .o.  Currency:0 @-> || .#. _ ;
+
+define FormattedNumber NZDigit Digit^<3 [PSep Digit^3]^{1,4} ;
+define UnFormattedNumber %0 | [NZDigit Digit*] ;
+define CardinalNumber FormattedNumber | UnFormattedNumber;
+define OrdinalNumber CardinalNumber OrdSuffix;
+define DecimalNumber [FormattedNumber | UnFormattedNumber] DecSep Digit+;
+define ArabicNumber CardinalNumber | OrdinalNumber | DecimalNumber;
+define currencyAmount  Currency [FormattedNumber | UnFormattedNumber] (DecSep Digit Digit); 
+define ExpandedArabicNumber currencyAmount | CardinalNumber | DecimalNumber | OrdinalNumber;
+

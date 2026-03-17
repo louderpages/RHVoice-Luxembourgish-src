@@ -1,0 +1,105 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+source alphabet.foma
+
+#  Maps x-sampa characters or sequences of characters to our LB phonemes.
+define XSoundMap 
+[[a (":")] : "/aa0"] | 
+[A : "/a0"] | 
+[[{A~}|{a~}|{6~}] : "/an0"] | 
+["{" : "/ae0"] | 
+[[1|I|"@"] : "/ax0"] | 
+#[{@U} : "/ou0"] | 
+[{@U} : "/o0"] | 
+[6 : "/er0"] | 
+[{6_k} : "/ier0"] | 
+[["{" ":" I] : "/aei0"] | 
+[{AU} : "/au0"] | 
+[["{" ":" U] : "/aeu0"] | 
+[{AI} : "/ai0"] | 
+[b: "/b"] | 
+[d : "/d"] | 
+[{dz} : "/dz"] | 
+[D : "/dh"] | 
+[e : "/e0"] | 
+[{e:} : "/ee0"] | 
+[[E (":")] : "/aae0"] | 
+[{3I} : "/ei0"] | 
+[{eI} : ["/e0" "/j"]] | 
+[f : "/f"] | 
+[[g|G] : "/g"] | 
+[h : "/h"] | 
+[i : "/i0"] | 
+[[{i~}|{i:}] : "/ii0"] | 
+[{i@} : "/ie0"] | 
+[{E~} : "/in0"] | 
+[j : "/j"] | 
+[k : "/k"] | 
+[l : "/l"] | 
+[m : "/m"] | 
+[n : "/n"] | 
+[N : "/ng"] | 
+[o : "/o0"] | 
+[{o:} : "/oo0"] | 
+[{oI} : "/oi0"] | 
+[[O|Q|{O~}|{o~}] : "/on0"] | 
+[{oU} : ["/o0" "/w"]] | 
+[p : "/p"] | 
+[r : "/r"] | 
+[R : "/rh"] | 
+[{R\} : "/r"] | 
+[s : "/s"] | 
+[{s\} : "/ch"] | 
+[S : "/sh"] | 
+[t : "/t"] | 
+[{t_s} : "/ts"] | 
+[T : "/th"] | 
+[[U|u] : "/u0"] | 
+[{u:} : "/uu0"] | 
+[{u@} : "/ue0"] | 
+[v : "/v"] | 
+[w : "/w"] | 
+[x : "/xh"] | 
+[y : "/y0"] | 
+[z : "/z"] | 
+[{z\} : "/zz"] | 
+[Z : "/zh"] |  
+[{d_Z} : "/dzh"]  
+ ; 
+
+# Stress is marked with " in X-SAMPA. We attempt to handle stress before a vowel or a consonant.
+define ApplyStressMark 
+stressVowelMap -> || {"} pConsonant* _ ; 
+
+# LOD doesn't stress monosyllabic words. Perhaps it's a common convention. So we stress them here.
+define StressOnlySyllable 
+stressVowelMap -> || .#. pConsonant* _ pConsonant* .#. ; 
+
+define MapXSampa 
+[XSoundMap @->]  
+# Cleanup.
+# - can be use to prevent things like a diphthong where there should be two vowels.
+# And clean up unprocessed : just in case they may turn up.
+.o. ["-" | ":" -> 0] 
+.o. ApplyStressMark 
+.o. [{"} -> 0] 
+.o. StressOnlySyllable 
+# Sanity check: we expect just a sequence of our phonemes at this point.  Fail if not everything was mapped.
+.o. [[pVowel | pConsonant]+] 
+ ; 
+
+regex MapXSampa ; 
+

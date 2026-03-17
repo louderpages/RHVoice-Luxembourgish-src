@@ -1,0 +1,130 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+source alphabet.foma 
+
+define AbbreviationTranslate 
+  [{km}:{kilometer}] |
+	[{SMSen} : {smsen}] |   # this word is in the lexicon
+	[[{SONN}|{Sonn} (%.)] : {sonntag}]  ; 
+
+define Abbreviation  AbbreviationTranslate.u;
+
+define LetterSequenceWV 
+	{Abc} | {ABC} | {abc}  | 
+	{Abi} | {ABI} | {abi}  | 
+	{Abs} | {ABS} | {abs}  | 
+	{Ac} | {AC} | {ac}  | 
+	{Adsl} | {ADSL} | {adsl}  | 
+	{Ai} | {AI} | {ai}  | 
+	{Amd} | {AMD} | {amd}  | 
+	{Api} | {API} | {api}  | 
+	{Apk} | {APK} | {apk} |
+	{Asap} | {ASAP} | {asap}  | 
+	{Asr} | {ASR} | {asr}  | 
+	{Atm} | {ATM} | {atm}  | 
+	{Aur} | {AUR} | {aur}  | 
+	{Cae} | {CAE} | {cae}  | 
+	{Ceo} | {CEO} | {ceo}  | 
+	{Cgi} | {CGI} | {cgi}  | 
+	{Cia} | {CIA} | {cia}  | 
+	{Cio} | {CIO} | {cio}  | 
+	{Cmu} | {CMU} | {cmu}  | 
+	{Cpa} | {CPA} | {cpa}  | 
+	{Cpe} | {CPE} | {cpe}  | 
+	{Cpu} | {CPU} | {cpu}  | 
+	{Dfa} | {DFA} | {dfa}  | 
+	{Diy} | {DIY} | {diy}  | 
+	{Dna} | {DNA} | {dna}  | 
+	{Dpi} | {DPI} | {dpi}  | 
+	{Dvi} | {DVI} | {dvi}  | 
+	{Edt} | {EDT} | {edt}  | 
+	{Eff} | {EFF} | {eff}  | 
+	{Efl} | {EFL} | {efl}  | 
+	{Eu} | {EU} | {eu}  | 
+	{Faq} | {FAQ} | {faq}  | 
+	{Fbi} | {FBI} | {fbi}  | 
+	{Fce} | {FCE} | {fce}  | 
+	{Fpu} | {FPU} | {fpu}  | 
+	{Fsa} | {FSA} | {fsa}  | 
+	{Gpu} | {GPU} | {gpu}  | 
+	{Hbo} | {HBO} | {hbo}  | 
+	{Hdmi} | {HDMI} | {hdmi}  | 
+	{Hiv} | {HIV} | {hiv}  | 
+	{Icq} | {ICQ} | {icq}  | 
+	{Ios} | {IOS} | {ios}  | 
+	{Ibm} | {IBM} | {ibm}  | 
+	{Ip} | {IP} | {ip}  | 
+	{Ipa} | {IPA} | {ipa}  | 
+	{Ipc} | {IPC} | {ipc}  | 
+	{Ipo} | {IPO} | {ipo}  | 
+	{Iptv} | {IPTV} | {iptv}  | 
+	{Iq} | {IQ} | {iq}  | 
+	{Irc} | {IRC} | {irc}  | 
+	{Isbn} | {ISBN} | {isbn}  | 
+	{Isdn} | {ISDN} | {isdn}  | 
+	{Isp} | {ISP} | {isp}  | 
+	{Mba} | {MBA} | {mba}  | 
+	{Mdi} | {MDI} | {mdi}  | 
+	{Mep} | {MEP} | {mep}  | 
+	{Mtu} | {MTU} | {mtu}  | 
+	{Nba} | {NBA} | {nba}  | 
+	{Ndfa} | {NDFA} | {ndfa}  | 
+	{Ngo} | {NGO} | {ngo}  | 
+	{Npo} | {NPO} | {npo}  | 
+	{Nsa} | {NSA} | {nsa}  | 
+	{Nvda} | {NVDA} | {nvda}  | 
+	{Ny} | {NY} | {ny}  | 
+	{Nyt} | {NYT} | {nyt}  | 
+	{Ocr} | {OCR} | {ocr}  | 
+	{Odf} | {ODF} | {odf}  | 
+	{Oem} | {OEM} | {oem}  | 
+	{Omg} | {OMG} | {omg}  | 
+	{Oo} | {OO} | {oo}  | 
+	{Oop} | {OOP} | {oop}  | 
+	{Os} | {OS} | {os}  | 
+	{Pci} | {PCI} | {pci}  | 
+	{Pda} | {PDA} | {pda}  | 
+	{Ppa} | {PPA} | {ppa}  | 
+	{Rsa} | {RSA} | {rsa}  | 
+	{Rtti} | {RTTI} | {rtti}  | 
+	{Seo} | {SEO} | {seo}  | 
+	{Sos} | {SOS} | {sos}  | 
+	{Tsa} | {TSA} | {tsa}  | 
+	{Uae} | {UAE} | {uae}  | 
+	{Udp} | {UDP} | {udp}  | 
+	{Ufo} | {UFO} | {ufo}  | 
+	{Uk} | {UK} | {uk}  | 
+	{Uml} | {UML} | {uml}  | 
+	{Upnp} | {UPNP} | {upnp}  | 
+	{Uri} | {URI} | {uri}  | 
+	{Url} | {URL} | {url}  | 
+	{Usa} | {USA} | {usa}  | 
+	{Usb} | {USB} | {usb}  | 
+	{Ussr} | {USSR} | {ussr}  | 
+	{Utc} | {UTC} | {utc}  | 
+	{Utf} | {UTF} | {utf}  | 
+	{Vba} | {VBA} | {vba}  | 
+	{Vdu} | {VDU} | {vdu}  | 
+	{Vga} | {VGA} | {vga}  | 
+	{Voa} | {VOA} | {voa}  | 
+	{Wto} | {WTO} | {wto} |
+	{Xyz} | {XYZ} | {xyz} ; 
+
+define LetterSequence  
+   consonantLetter+ 
+	  ;
+

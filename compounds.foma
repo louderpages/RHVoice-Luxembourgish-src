@@ -1,0 +1,78 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+# This Foma outputs two fsts: csplit and cg2p, applied at runtime one after another.
+# csplit will split the input word into its parts. To be determined: handle multiple splits in the core?
+# cg2p: will take the output of csplit and map it to phonemes, removing the separators. The result is ready to be processed by the core further just like the results of lex or g2p fsts.
+
+
+read spaced-text lex.txt
+define Lex ; 
+
+#Words that can appear as heads, the rightmost parts.
+read text heads.txt
+define Head;
+
+# Words that can appear as modifiers.
+read text mods.txt
+define Mod;
+
+# Optional linking components with their pronunciations. So far the only link I'm sure about is s.
+define LinkLex 
+ [s : "/s"]  ; 
+
+define Link LinkLex.u ; 
+
+# Optional plural endings
+define PluralLex 
+ [[n|{en}|{nen}|{sen}] : ["/ax0" "/n"]]  
+ ;
+
+define Plural PluralLex.u;
+
+# This will map an input string into possibly multiple splits.
+define SplitCompound [ [Mod ([0:sep] Link) [0:sep]]+ Head (0:sep Plural)] |
+										 [ [Mod ([0:sep] Link) [0:sep]]+ Plural] ;
+
+# For safety: make sure the pronunciation of links is not redefined by the lexicon.
+define CLex LinkLex .P. PluralLex .P. Lex ; 
+
+# This will map a split word from csplit to its pronunciation, keeping separators. It's just the way which doesn't break Foma.
+define ConcatPronunciations Lex [sep CLex]+ ; 
+
+regex SplitCompound ;
+write att /tmp/csplit.att
+clear
+
+
+# Remove all but the first stress, to follow the more frequent pattern of compound stress. To be determined: will this work? Do we need to model possible secondary stress remaining from the original primary stress?
+source alphabet.foma
+define KeepOnlyFirstStress 
+stressVowelMap.i -> || stressVowelMap.l ?* sep ?* _ ; 
+
+define CompoundG2p 
+ConcatPronunciations 
+.o. KeepOnlyFirstStress 
+.o. [sep ->0] 
+# clean up plural endings
+.o. "/ax0":0 @-> || ["/ax0"|"/ax1"] _ "/n" .#. 
+.o. "/ier0" -> ["/ax0" "/r"] || _ "/ax0" "/n" .#. 
+.o. "/uer0" -> ["/ue0" "/r"] || _ "/ax0" "/n" .#. 
+ ; 
+
+regex CompoundG2p ;
+write att /tmp/cg2p.att
+clear

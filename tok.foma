@@ -1,0 +1,339 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# Modifications of original code made for the Luxembourgish langauge.
+
+# Copyright (C) 2024 Non-Routine LLC.  <lp@louderpages.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+# ------
+
+#
+# Generalized Sentence- level tokenization,
+#
+
+
+# Consider the ssentence:
+#    “fi, foo 3 000”
+# The core will give the tok.FST the following set of symbols:
+#    sb f i , eb #x20 sb f o o eb #x20 sb 3 eb #x20 sb 0 0 0 eb
+# The tok can then use rules, if it wishes, to see that the following sequence:
+#     sb 3 eb #x20 sb 0 0 0 eb
+# should be tagged as all one number.
+# The core expects tags to be placed only between ‘sb’ and ‘eb’ pairs.
+# So, the following is a valid response from the tok for the above sentence:
+#     sb f i word , sym eb #x20 sb f o o word eb #x20 sb 3 eb #x20 sb 0 0 0 num eb
+# Note how there is no ‘num’ after the “3”.
+# The core will pass the string “3 000” to the numbers FST without the “sb” and “eb” symbols, but with the hex whitespace codes.
+# 
+
+# Uses sentence level tokenization
+### define Space  [eb ?* sb];  # "#x20"
+
+# Brings in alphabet.foma, WSpace, Word
+source alphabet.foma
+source tok_config.foma
+
+define nonChar bk;
+define TokenTypeTag num|dig|sym|word|lseq|graph|abb|csuffix; 
+define tag TokenTypeTag | eb | sb | pb;
+
+
+## The valid formats for numbers are defined in the following file, which is also sourced by numbers.foma
+source number_defns.foma
+source abbrevs.foma  
+source romans.foma
+source symbols.foma
+define hyphen Hyphen.u;
+
+# pb temporaryily prevent later rules eating from front of previously tagged rule
+define from [sb|TokenTypeTag] (\[pb|eb|TokenTypeTag]*);  # and, there must be an sb after any eb so as not to mess inside a space
+define to \TokenTypeTag* [pb|eb];  
+##define numfrom [sb|TokenTypeTag] (\[pb|eb|TokenTypeTag]*);  # and, there must be an sb after any eb so as not to mess inside a space
+##define numto (\[TokenTypeTag|Digit]*) [pb|eb];  
+
+define eosCand  [SilentPunctuation.u+ | %,]+;
+define tokEOS 
+ 	eosCand @-> eos ... || \eosCand _ eb .#. ;           # Take silent sentence enders out of the process
+
+define tokNUM 
+#CardinalNumber @-> pb ... num || ? sb _ %. eb .#. 
+NZDigit Digit^>1 @-> pb ... num ||  sb _ %. eb .#. 
+.o.
+[ExpandedArabicNumber]  @-> pb ... num ||  \ExpandedArabicNumber _ \[ExpandedArabicNumber | TokenTypeTag];
+
+define tokDIG # want to avoid the inside of a previously marked num
+ [%0 Digit+]  @-> pb ... dig ||   _  [(\[num|dig]*) pb \num+  num] | [\[num|dig]* .#.] ;      # Digit stream begining zero
+
+define tokWORD 
+ Abbreviation (INITcase 0:word)  @-> pb ... abb || [sb|TokenTypeTag]  _ eb|pb    # note, we take out any apostrophes
+  .o.
+ INITcase @-> pb ... word || from _ Letter 
+  .o.
+ Word  @-> pb ... word || from _ \[Letter | lseq | abb];   # note, we take out any apostrophes
+
+define tokCAMEL  
+ [..] -> word pb || lcLetter _ ucLetter (Letter*) word, ucLetter _ ucLetter [[lcLetter - s] | [s lcLetter]];   # CamelCase
+
+source tok_subs.foma
+
+define lseqExclMk1 [sb | hyphen | SilentPunctuation.u];
+define lseqExclMk2 [eb |  eos | hyphen | SilentPunctuation.u] ;
+define tokLSEQ 
+ [
+  [[LetterSequence - Abbreviation] | LetterSequenceWV] word:lseq @->  || tag  _ ,,  #  change a whole word into a letter sequence 
+	 ucLetter+ word:lseq @->  || ?* lcLetter ?* pb _ ,,
+	 ucLetter+ word:lseq @->  || pb _ ?* lcLetter ?*  ,,
+
+   Letter word:lseq @-> || \lseqExclMk1 pb _ , pb _  \lseqExclMk2, .#. sb pb _ , pb _ eb .#.  	  # or a single letter without space on both sides, or a hyphen
+ ]
+	.o.
+	abb:word @-> || _ ;  # now that LSEQ passed, safe for acronyms marked as abbrevs
+
+define tokSYM 
+ \[eos | grapheme | Word | Digit | tag] @-> pb ... sym || from  _ to;   # Anything else so far is a symbola provided not bracketed
+
+define tokROMAN 
+	[word|lseq]:num @->  || [tag - num - word - dig - lseq]  RomanNumeral _ \[Digit|Letter];  # Roman Numerals
+
+# Go for dates ahead of formatted numbers
+define dateMonth [(%0) NZDigit 0:dig] | [[{11} | {12}] 0:num];
+define dateDay [%0 NZDigit 0:dig] | [ [[(1|2) Digit] | {30} | {31} ] 0:num];
+define dateYear [ ([1 9] | [2 %0]) Digit Digit] 0:num;
+define dateSilentDot [%. 0:"graph+silent"];
+define dateSilentSlash [%/ 0:"graph+silent"];
+define dateSilentDash [%- 0:"graph+silent"];
+define tokDATE   
+          dateDay dateSilentDash dateMonth  dateSilentDash dateYear  @-> ||  sb _ eb ,,
+          dateMonth  dateSilentDash dateDay  dateSilentDash dateYear  @-> ||  sb _ eb ,,
+          dateYear  dateSilentDash dateMonth  dateSilentDash dateDay  @-> ||  sb _ eb ,,
+          dateDay dateSilentSlash dateMonth  dateSilentSlash dateYear  @-> ||  sb _ eb ,,
+          dateMonth  dateSilentSlash dateDay  dateSilentSlash dateYear  @-> ||  sb _ eb ,,
+          dateYear  dateSilentSlash dateMonth  dateSilentSlash dateDay  @-> ||  sb _ eb ,,
+          dateDay  dateSilentDot dateMonth  dateSilentDot dateYear  @-> ||  sb _ eb ,,
+          dateMonth  dateSilentDot dateDay  dateSilentDot dateYear  @-> ||  sb _ eb ,,
+          dateYear  dateSilentDot dateMonth  dateSilentDot dateDay  @-> ||  sb _ eb; 
+
+define BasicTokenizer  
+  tokDATE
+	.o. 
+	tokNUM
+  .o.
+  tokDIG
+  .o.  
+	tokWORD
+	.o.
+  tokEOS # waited to let tokWORD pick out abbreviations with dots at end of sentence
+  .o.
+	tokSPELL
+	.o.
+ ## tokCAMEL
+ ## .o.
+	tokINITS
+	.o.
+  tokLSEQ
+  .o.
+	[ word:0 %- pb:0 @-> || _ [\tag]* word ]
+	.o.
+	tokSYM
+ .o. 
+  csuffix:word -> || _ 
+ .o.
+  pb:0 -> || _   # clear protective boundaries
+	.o.
+	  lseq:word @-> || word eb WSpace sb "s" _    # wann s ...
+	.o.
+	lseq:word @-> || .#. sb E _ eb WSpace sb Letter+ word   # special case of the word "e" in LB.
+ .o.
+ tokROMAN
+; 
+
+
+define tagIpSector  NZDigit (Digit (Digit)) [0|dig|num]:dig;
+
+# Context parsing
+define digPair [[NZDigit Digit 0:"num+postbreak"]|[%0 Digit 0:"dig+postbreak"]];
+define ConvertPhoneNumbers # ip addresses, string with period seps and decimal markers ...
+    %( sym %+ sym:graph Digit+ num:dig %) sym (eb WSpace sb) NZDigit Digit Digit num:"dig+postbreak" (%- sym:"graph+silent") digPair* (Digit) [dig|num] @->  || sb _ ,,
+     %+ sym:graph  3 5 2 0:"dig+postbreak"  [NZDigit Digit Digit 0:"dig+postbreak"] digPair* (Digit) [dig|num] @->  || sb _ ,,
+    Digit Digit Digit num:dig [eb WSpace eb Digit Digit [num|dig]]* @->  || sb _ ,,
+    6 Digit Digit num:"dig+postbreak" [eb WSpace eb Digit Digit [num|dig]]* @->  || sb _ ,,
+  # [ [num:dig]|dig|Digit|sb|eb|WSpace]*  @-> || [%+ sym Digit+]|dig _ eb WSpace sb pb \tag [num|dig]  ,, # phones
+	   tagIpSector [ %. [0|sym]:"graph+dot" tagIpSector]^3 @-> || [.#. sb] | WSpace _ eb # ip address
+		 ;
+
+#define postalCode sym:"graph+dash" [[Digit Digit 0:"num+postbreak"]|[%0 Digit 0:dig]] [[Digit Digit [num|dig]:"num+postbreak"]|[%0 Digit [num|dig]:dig]]   @-> || sb L lseq %- _  eb;
+define postalCode sym:"graph+dash" digPair digPair [num|dig]:0  @-> || sb L lseq %- _  eb;
+
+define numberBanks     Digit^>4 num:dig @->  || tag Digit+ [num|dig] [[? sym]|[eb WSpace sb]] _ ,,   # anything of xxxxx or longer is turned to a digit
+		     Digit^>4 num:dig @->  || _  [[? sym]|[eb WSpace sb]] Digit+ [num|dig] ; 
+
+
+define chunkDigs   
+    ((Digit) Digit 0:"dig+postbreak") [Digit Digit Digit 0:"dig+postbreak"]^>1 [dig|num]:0 @-> || \Digit _ ; # mimics thousands periods
+
+
+# times. These will be tagged internally as num or dig, separated by colons which we want to keep silent
+define split0d [%0 (num)];
+define HH  [ [ [([split0d|1]) Digit] - %0]  | [2 [%0|1|2|3]] ];
+define MM  [[split0d|1|2|3|4|5] Digit];
+define SS  [[split0d|1|2|3|4|5] Digit];
+define Mins  %0 | [NZDigit (Digit (Digit))];
+
+define TimeSep  [ [num|dig] %: sym:"graph+silent"];
+define HHMMSS [HH TimeSep MM TimeSep SS [num|dig]]; #   --- send to numbers 
+define HHMM [HH TimeSep MM [num|dig]]; #   --- send to numbers 
+define MMSS [Mins TimeSep SS [num|dig]]; #   --- send to numbers 
+
+define TimeMap HHMMSS | [HHMM ((eb WSpace sb) ampm)] | MMSS  @-> || tag _ ;
+
+# ? and ! for intonation, buried away from last position.
+# Word-level tokenization ignores any punctuation after those marks until EOS
+# In moving to sentence-level we should not mark ?,!,:,; if followed by punctuation.
+# 
+#  But what about elipsis (three dots) `
+# The WhatsApp comma and dot
+# WhatsApp adds a dot. How can we tell? We don't want "two dots" announced. And we don't want one dot announced.
+# But what if the last symbol is something that we will otherwise name, like a question mark?
+# Question marks and exclamation marks must not be named in other circumstances. For example, in quoted text "When?"
+# But, watch out for ellipsis ... 
+
+
+define eosHandling 
+				sym:"graph+silent" @-> || eos ?* _      # note: ! and ? go to core for intonation
+		;  
+
+# We will make the distinction between the hyphen class, and the minus sign which is a member   
+define singleLetter Letter [word | lseq];
+define USFormattedNumber NZDigit Digit^<3 [%, Digit^3]^{1,4} ;
+define BankingNumber [[FormattedNumber | UnFormattedNumber] DecSep Digit Digit] |
+							[[USFormattedNumber | UnFormattedNumber] %. Digit Digit] |
+							[Currency [FormattedNumber | UnFormattedNumber] (%.|%, Digit Digit)] ;
+
+define hyphenMap  
+      [   # multiples are en- or em-dashes, or visual spacing. Two minuses might be programming i-- but too bad
+			  [hyphen sym:"graph+silent"]+ hyphen sym:"sym+postbreak"  @-> ||  _     
+				]
+				.o.
+				[
+			 sym:"graph+minus" @->  ||  sb hyphen _ Digit ,   # neg number
+			 				[%+ | %=]  ?*  %-  _ ,  
+							%-  _ ?* [%+ | %=]   # Arithmetic?
+			]
+			 .o.
+		  [
+       sym:"graph+dash" @-> || \Letter singleLetter (eb WSpace sb) hyphen _ (eb WSpace sb) singleLetter , 
+			 				[num | dig] hyphen _ Digit,
+## indiscriminate attempt at banking app. [sym|sb] hyphen _ (eb WSpace sb) [\TokenTypeTag+ TokenTypeTag]^{0,1} \TokenTypeTag+ [num | dig]  ## any hyphen preceding a number anywhere may be significant allow for zero or one intervening tagged strings
+## Banking app which has - (ccy)( )US formatted number
+							[sym|sb] hyphen _ (eb WSpace sb) [\TokenTypeTag+ (TokenTypeTag)]^{0,1} (eb WSpace eb) BankingNumber [num | dig]  ## 
+			 ]
+			 .o.
+		   [
+			 sym:"sym+postbreak" @->  || sb hyphen _ , hyphen _ eb    # space before or after 
+			 ]
+			 .o.
+			 [
+			 sym:"graph+silent"  @->  ||  hyphen _     # otherwise silent (in middle of a word or some construct
+			 ]
+			 ;
+
+define underscoreMap  
+      [   # multiples
+			  [%_ sym:"graph+silent"]+ %_ sym:"graph+multiple"  @-> ||  _     # more
+			]
+				.o.
+		   [
+			 sym:"sym+postbreak" @->  || sb %_ _ , %_ _ eb    # space before or after 
+			 ]
+			 .o.
+			 [
+			 sym:graph  @->  ||  %_ _     # otherwise pronounce it
+			 ]
+			 ;
+
+define otherMultiples 
+		### wait for future	  [%! sym:"sym+exclam"] [%! sym:"graph+silent"]* %! sym:"graph+multiple+prebreak"  @-> ||  _   ,,   
+		###	  [%? sym:"sym+query"] [%? sym:"graph+silent"]* %? sym:"graph+multiple+prebreak"  @-> ||  _   ,,   
+			  [%! sym:"sym+exclam"] [%! sym:"graph+silent"]* @-> ||  _   ,,   
+			  [%? sym:"sym+query"] [%? sym:"graph+silent"]*  @-> ||  _   ,,   
+
+  # dots as ellipsis
+	    [%. sym:"graph+silent"]^2 eb @-> || \sym  _  .#. ,,  # probably Whatsapp adding a dot
+	    [%. sym:"graph+silent"]+ %. sym:"sym+ellipsis+prebreak"  @-> ||  _   ,,  # more than one dot send for future intonation, but add a pause for now 
+	
+			  [%, sym:"sym+postbreak"] (%, sym:"sym+postbreak")* %, sym:"graph+multiple"  @-> ||  _    ,,
+			  [%: sym:"sym+postbreak"] (%: sym:"sym+postbreak")* %: sym:"graph+multiple"  @-> ||  _     
+				;
+
+define colonMap 
+				sym:"graph+to" @-> ||  [num | dig]  %: _ Digit 
+				.o.
+				sym:"graph" @-> ||  %: _ \eb  ## if not space followin, pronounce it
+				 ;
+
+define subTagTest  
+		hyphenMap .o. underscoreMap .o. otherMultiples .o. colonMap
+		.o. 
+		sym:"sym+query" -> || %? _ eb .#. 
+		.o.
+		sym:"sym+exclam" -> || %! _ eb .#. 
+    .o.
+		eosHandling 
+		.o. 
+   					# HACK.  Silence dot after a word and before a space
+	   sym:"sym+postbreak" @-> || Letter^>1 word %. _ eb 
+		 .o. 
+   # no pause  if it comes after a single letter and before a space or another single letter dot (so U.S.A. is silent dotted)
+	   sym:"graph+silent" @-> || \Letter Letter [word|lseq] %. _  [eb | Letter [word|lseq] (eos) %. ] 
+		.o.
+    # silent punctuation
+		 	sym:"sym+postbreak" @-> 	|| SilentBeforeSpace.u _ [eb | hyphen | SilentBeforeSpace.u],  AlwaysSilentPause.u _    # colons and semi-colons
+		 .o. 
+		 # ampersand becomes plane "and" if it is HAS space on both sides
+		%& sym:"graph+and" @-> || WSpace sb _ eb WSpace  
+		.o.  
+		sym:"sym+postbreak" @-> || pauseSymbol.u _ 
+	 .o. 
+	 [[Symbol.u - AlwaysSilent.u] [sym:graph]] @-> || \eos  _    # any silent sym without a pause, becomes spoken
+	 .o.  
+	 "graph+silent":sym @-> || _   # remove protection on pauseless colon
+	.o.  eos:0 -> || _ 
+	 ; 
+
+define ContextTokenizer  postalCode .o. ConvertPhoneNumbers .o. numberBanks .o. TimeMap .o. chunkDigs ; 
+
+define CoreInputWord  sb [\[tag | sb | eb | [sb \eb+ eb]]]+ eb ;
+
+define CoreInputSpace [\[tag | sb | eb]]* ; 
+define CoreInput CoreInputWord [CoreInputSpace CoreInputWord]* ;  
+
+regex CoreInput .o. BasicTokenizer ;
+write att basic.att
+clear
+
+regex ContextTokenizer; 
+write att context.att
+clear
+
+regex subTagTest ; 
+write att subtags.att
+clear
+
+regex CoreInput .o. BasicTokenizer .o. ContextTokenizer .o. subTagTest ; 
+## clear 
+## system ../general/att2bin /tmp/basic.att /tmp/context.att tok.fst
+

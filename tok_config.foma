@@ -1,0 +1,38 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+source alphabet.foma
+
+#0  Whitespace between strings could be language dependent
+define WSpace ["#x20" | "#xA0" | "#xa0"];   # Ought to be defined in one place
+
+#1 Spelling
+source tok_sreader_spell.foma
+
+#2 Word components
+define Word [ [D apos] | [d apos] | [Z apos] | [z apos] | [[grapheme+ (grapheme graphem+)] | [grapheme grapheme+] ] ];
+##
+
+#3 Initialisms
+# tokINITS wants to know which common words should not be initialized
+##define capWord  [ {ONE} | {TWO} | {FOUR} | {FIVE} | {SIX} | {TEN} | {DO} | {BE} | {OR} | {AND} | {NOT} | {NOW} | {THEN} | {STOP} | {FROM} | {TOO} | {TO} | {THE} | {THIS} | {THAT} | {END} | {BEGIN} | {HERE} | {COME} | {GO} | {OH} | {AH} | {OUCH} | {YES} | {NO} | {COPY} | {PASTE} | {CUT} | {MENU} | {FILE} | {FIND} | {SAVE} | {EXIT} | {IN} | {ON}  | {OUT} | {OFF}  ]; 
+
+define INITcase  
+ [s apos] | [d apos] | [z apos] | [c apos] | [l apos] | [m apos] | [t apos] | 
+ [S apos] | [D apos] | [Z apos] | [C apos] | [L apos] | [M apos] | [T apos] ;  # Include Frence second-lang 
+
+define INITexcl [] ;
+
+define capWord  [] ; 

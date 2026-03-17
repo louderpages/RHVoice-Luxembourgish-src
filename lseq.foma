@@ -1,0 +1,89 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+
+define specialInits 
+  [{lcgb} : ["/ae1" "/l" "/s" "/ee1" "/zh" "/ee1" "/b" "/ee1"]] | 
+  [{ogbl} : ["/oo1" "/zh" "/ee1" "/b" "/ee1" "/ae1" "/l"]] | 
+  [{cgdis} : ["/s" "/ee1" "/zh" "/ee1" "/d" "/ii1" "/s"]] | 
+  [{smsen} : ["/ae1" "/s" "/ae1" "/m" "/ae1" "/s" "/ax0" "/n"]] | 
+  [{ceo} : ["/s" "/ii1" "/ii1" "/oo1"]];
+
+define circumflex "/ts" "/i0" "/r" "/k" "/u1" "/m" "/f" "/l" "/ee0" "/k" "/s";
+define grave "/g" "/r" "/aa1" "/f";
+define cedilla  "/ts" "/ee0" "/d" "/i1" "/l" "/a0";
+define acute "/a0" "/k" "/uu1" "/t";
+define umlaut "/u1" "/m" "/l" "/au0" "/t";
+define tilde "/t" "/i1" "/l" "/d" "/ax0";
+
+define Letter 
+[a : ["/aa1"]] | 
+[ã : ["/aa1" tilde]] | 
+[ä : ["/ae1"]] | 
+[â : ["/aa1" circumflex]] | 
+[à : ["/aa1"  grave]] | 
+[b : ["/b" "/ee1"]] | 
+[c : ["/ts" "/ee1"]] | 
+[d : ["/d" "/ee1"]] | 
+[ç : ["/ts" "/ee1" cedilla]] | 
+[e : ["/ee1"]] | 
+[é : ["/ee1" acute]] | 
+[è : ["/ee1" grave]] | 
+[ë : ["/ax1"]] | 
+[ê : ["/ee1" circumflex]] | 
+[f : ["/ae1" "/f"]] |
+[g : ["/g" "/ee1"]] | 
+[h : ["/h" "/aa1"]] | 
+[i : ["/ii1"]] | 
+[î : ["/ii1" circumflex]] | 
+[ï : ["/ii1" umlaut]] | 
+[í : ["/ii1" acute]] | 
+[ì : ["/ii1" grave]] | 
+[k : ["/k" "/aa1"]] | 
+[l : ["/ae1" "/l"]] | 
+[m : ["/ae1" "/m"]] | 
+[n : ["/ae1" "/n"]] | 
+[ñ : ["/ae1" "/n" tilde]] | 
+[o : ["/oo1"]] | 
+[õ : ["/oo1" tilde]] | 
+[ô : ["/o1" circumflex]] | 
+[ó : ["/oo1" acute]] | 
+[ö : ["/ooe1"]] | 
+[ò : ["/ooe1" grave]] | 
+[œ : ["/ee1" "/d" "/on1" "/l" "/o1" "/w"]] |
+[p : ["/p" "/ee1"]] | 
+[q : ["/k" "/uu1"]] | 
+[r : ["/ae1" "/r"]] | 
+[ß : ["/ae0" "/s" "/t" "/z" "/ae1" "/t"]] | 
+[s : ["/ae1" "/s"]] | 
+[ş : ["/ae1" "/s" "/ts" "/ee0" "/d" "/i1" "/l" "/a0"]] | 
+[t : ["/t" "/ee1"]] | 
+[u : ["/u1"]] | 
+[û : ["/u1" circumflex]] | 
+[ú : ["/uu1" acute]] | 
+[ù : ["/uu1" grave]] | 
+[ü : ["/y1"]] | 
+[v : ["/f" "/au1"]] | 
+[w : ["/v" "/ee1"]] | 
+[x : ["/i1" "/k" "/s"]] | 
+[y : ["/i1" "/g" "/r" "/e0" "/k"]] | 
+[ÿ : ["/i1" "/g" "/r" "/e0" "/k" umlaut]] |
+[f : ["/e1" "/f"]] | 
+[j : ["/j" "/o1" "/t"]] | 
+[z : ["/t" "/z" "/ae1" "/t"]] ; 
+
+#regex   [Letter -> || _ ]; 
+regex  specialInits -> || .#. _ .#. .o.  [Letter -> || _ ]; 

@@ -1,0 +1,32 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# Modifications of original code made for the Luxembourgish langauge.
+
+# Copyright (C) 2024 Non-Routine LLC.  <lp@louderpages.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+# Screen-readers in Spell mode: what strings might they pass? Ah, Screen-reader might be operating in different language to the RHVoice voic. ...
+
+define enSR [{cap} | {Cap} | {capital} | {Capital} ] ;  
+define ptSR	{maiúsculo} | {Maiúsculo} ;
+define esSR	{mayúsculo} | {Mayúsculo} ;
+define frSR	{majuscule} | {Majuscule} ;
+define deSR	{grosses} | {Grosses} ;
+define lbSR	{grousse} | {Grousse} ;
+define fiSR	[{iso}|{Iso} (word eb WSpace sb pb {kirjain}|{Kirjain})] ;
+
+
+define SR enSR | ptSR | esSR | frSR | deSR | lbSR | fiSR ;  # room for others ...

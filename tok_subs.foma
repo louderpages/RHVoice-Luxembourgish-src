@@ -1,0 +1,81 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg
+
+# Modifications of original code made for the Luxembourgish langauge.
+
+# Copyright (C) 2024 Non-Routine LLC.  <lp@louderpages.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+# Letters (via alphabetl.foma) WSpace,capWords and SR from ...
+## source tok_config.foma
+
+# Needed by generalized tok
+# single letter anywhere in a phrase together with the word "Capital" (UCLABEL)  = this should work for spell mode too
+
+
+# Identifying character by spelling, and discounting spell by word with single character words
+#
+# It is too intrusive to read out uppercase unless typing or spelling.
+#
+# a) Some screen-readers give no indication, but most do indicate with a word (e.g "cap" , "mayuscuolo" either before or after
+#    In such cases we do not want to duplicate.
+# b) Some screen-readers have a setting where a beep can be made to indicate upper-case. In such cases the TTS is passed only the character.
+# c) Some screen-readers fail to give any indication
+#
+# Lower case letters are probably not marked as being spelled.  But, if the letter is on its own AND we assume that spelling by word is (1) unusual (2) spelling a letter instead of pronouncing it as a word is not too bad, then we go for spelling.
+#
+#  Because of (b) we ought to not pronounce capitalization words of our own. In the case of (c) - that is a screen-reader deficit and will be faced by all TTS
+# In the case of (a) we need to make sure to spell the letter. As in "capital A" or "iso kirjain Å".  We need to know the letter should benamed and not pronounced
+
+# so; we look for .#.sbXeb.#.  where X is any lower or upper-case letter
+# and   .#.sbSReb#x20sbXeb.#.  or .#.sbXeb#x20sbSReb.#.  where SR is the screen-reader capitalization word, and the order depends on the language (or screenreader)
+
+# the SR strings are defined in tok_config
+
+define tokSPELL  
+   word:lseq @-> || .#. sb pb Letter _ eb .#. ,,  #  any-case on own, spoken as letter name, we count on the SR to indicate uc
+   word:lseq @-> || .#. sb pb Letter _ eb WSpace sb pb SR word eb .#. ,,  
+   word:lseq @-> || .#. sb pb SR word eb WSpace sb pb Letter _ eb .#. ;  #  upper-case  indicatore
+
+# capWord is defined in tok_config
+# INITexl is defined in tok_config
+
+define candInit [ucLetter^{2,4}] - capWord;  ##  No case
+define candInitStem ucLetter^{1,4};  # with Case
+define lcWord  pb \tag* lcLetter \tag* word;
+
+# We see a short UC word which is not a reserved, capWord.  
+# The question is if this is a word or an ititialism.
+# We think it's a word if all else in the sentence is uppercase, numbers or symbols.
+# It's an initilism if:
+#  - there is nothing else
+#  - there are lower-case letters in the sentence
+#  - there are upper-case letters but they are all candidate Inits
+# Hmmm: de Moivre ? => candidate is an initilism unless there is a capWord or a word greater than 4 chars in length
+define tokINITS  
+  [..] -> sb || .#. ?* [pb [ucLetter^>4|capWord] word] ?* _ .#.  # reject whole sentence by marking end with sb
+	.o.
+	word:excl @-> ||  pb INITexcl _ 
+	.o.
+  [0:lseq INITcase word:csuffix]  @-> ||   pb candInitStem _  ?* \sb .#.     # with case
+	.o.
+  word:lseq  @-> ||   pb candInit _ ?* \sb .#.     # no-case
+	.o.
+	excl:word @-> || _ 
+	.o.
+	sb:0 -> || _ .#.
+	;
+
+define tokINITS ?*;  # On second thoughts, no. Let's wait for phonotactics.

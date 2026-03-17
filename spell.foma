@@ -1,0 +1,101 @@
+# Copyright (C) 2025 Information and Press Service of the Government of Luxembourg 
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 2.1 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+define Letter 
+[[a|A]:[a]] | 
+[[â|Â]:[a hittchen]] | 
+[[á|Á]:[a accent aigu]] | 
+[[à|À]:[a accent grave]] | 
+[[ä|Ä]:[a treema]] | 
+[[ã|Ã]:[a tilde]] | 
+[[b|B]:bee] | 
+[[c|C]:tsee] | 
+[[ç|Ç]:[tsee cedille]] | 
+[[d|D]:dee] | 
+[[e|E]:ee] | 
+[[è|È]:[ee accent grave]] | 
+[[ê|Ê]:[ee hittchen]] | 
+[[ë|Ë]:[ee treema]] | 
+[[é|É]:[ee accent aigu]] | 
+[[f|F]:äf] | 
+[[g|G]:gee] | 
+[[h|H]:ha] | 
+[[i|I]:i] | 
+[[î|Î]:[i hittchen]] | 
+[[ï|Ï]:[i treema]] | 
+[[í|Í]:[i accent aigu]] | 
+[[ì|Ì]:[i accent grave]] | 
+[[j|J]:yott] | 
+[[k|K]:ka] | 
+[[l|L]:ell] | 
+[[m|M]:emm] | 
+[[n|N]:enn] | 
+[[ñ|Ñ]:[enn tilde]] | 
+[[o|O]:o] | 
+[[ô|Ô]:[o hittchen]] | 
+[[ó|Ó]:[o accent aigu]] | 
+[[ò|Ò]:[o accent grave]] | 
+[[ö|Ö]:[o treema]] | 
+[[õ|Õ]:[o tilde]] | 
+[[p|P]:pee] | 
+[[q|Q]:qu] | 
+[[r|R]:är] | 
+[[s|S]:ess] | 
+[ß : esszet] | 
+[[ş|Ş]:[ess cedille]] | 
+[[t|T]:tee] | 
+[[u|U]:u] | 
+[[û|Û]:[u hittchen]] | 
+[[ú|Ú]:[u accent grave]] | 
+[[ù|Ù]:[u accent aigu]] | 
+[[ÿ|Ÿ]:[i grek treema]] | 
+[[ü|Ü]:[u treema]] | 
+[[v|V]:fau] | 
+[[w|W]:wee] | 
+[[x|X]:ikks] | 
+[[y|Y]:[i grek]] | 
+[[z|Z]:tsett] ; 
+
+
+define Digit %0:null|1:eent|2:zwee|3:dräi|4:véier|5:fënnef|6:sechs|7:siwen|8:aacht|9:néng;
+
+define Whitespace 
+tab:tab | 
+nl:zeilnei | 
+cr:[carriage return] | 
+sp:sputt | 
+nbsp:[net-briechende raum] ; 
+
+source symbols.foma
+define SubTags 
+[[Hyphen.u minus] : minus] | 
+[[Hyphen.u dash] : bindestréch] |  
+[[%- dash] : gedankestréch] |  
+[[%& and] : an] |  
+[[%. dot] :punkt] |
+[[%: to] : doppelpunkt] |
+[[%- multiple] : puer bindestrécher] | 
+[[%_ multiple] : puer déif strécher] | 
+[[%? multiple] : [puer fragezeechen]] | 
+[[%! multiple] : [puer ausruffzeechen ]] | 
+[[%, multiple] : [puer kommaen]] | 
+[[%. multiple] : [puer punkten]] | 
+[[%: multiple] : [puer doppelpunkten]] | 
+[[%; multiple] : [puer stréchpunkten]] | 
+[0:capital Letter ucase:0] ; 
+
+regex 
+Letter | Digit | Whitespace |  Symbol | SubTags ; 
+
